@@ -102,7 +102,7 @@
               <option value="Louvor"></option>
               <option value="Recepção"></option>
               <option value="Oração"></option>
-              <option value="Ensino"></option>
+              <option value="Pastor"></option>
               <option value="Jovens"></option>
               <option value="Mídia"></option>
               <option value="Outro"></option>
@@ -198,6 +198,22 @@
       <!-- Visualização / Resultado -->
       <div class="card">
         <h2><i class="fa-solid fa-eye"></i> Pré-visualização do Cartão</h2>
+        <div class="palette-controls">
+          <div class="form-group palette-select">
+            <label for="palettePreset">Paleta do cartão</label>
+            <select id="palettePreset">
+              <option value="celebracao">Celebração</option>
+              <option value="oceano">Oceano</option>
+              <option value="alegria">Alegria</option>
+              <option value="amanhecer">Amanhecer</option>
+              <option value="personalizada">Personalizada</option>
+            </select>
+          </div>
+          <label class="color-control" for="previewColorOne">Fundo 1<input type="color" id="previewColorOne" value="#173f38"></label>
+          <label class="color-control" for="previewColorTwo">Fundo 2<input type="color" id="previewColorTwo" value="#d7654a"></label>
+          <label class="color-control" for="previewColorThree">Fundo 3<input type="color" id="previewColorThree" value="#278779"></label>
+          <label class="color-control" for="previewTextColor">Texto<input type="color" id="previewTextColor" value="#ffffff"></label>
+        </div>
         <div id="preview" class="preview-box"></div>
         
         <button class="btn btn-copy" id="btnCopiar">

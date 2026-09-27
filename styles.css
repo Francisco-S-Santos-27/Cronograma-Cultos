@@ -490,11 +490,44 @@ summary:focus-visible {
 }
 
 .preview-box {
-  background: linear-gradient(145deg, #173f38, #102d29);
-  border: 1px solid #5da99a;
+  background: linear-gradient(120deg, var(--preview-color-one) 0%, var(--preview-color-two) 52%, var(--preview-color-three) 100%);
+  color: var(--preview-text-color);
+  border: 1px solid var(--preview-color-two);
   border-radius: 6px;
   font-family: 'DM Sans', sans-serif;
   box-shadow: 0 8px 20px rgba(8, 31, 27, 0.18);
+}
+
+.palette-controls {
+  display: grid;
+  grid-template-columns: minmax(130px, 1.5fr) repeat(4, minmax(52px, 1fr));
+  align-items: end;
+  gap: 8px;
+  margin: 0 0 12px;
+}
+
+.palette-select {
+  min-width: 0;
+  margin: 0;
+}
+
+.color-control {
+  display: grid;
+  justify-items: center;
+  gap: 5px;
+  color: var(--muted-color);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.color-control input[type="color"] {
+  width: 100%;
+  height: 38px;
+  padding: 3px;
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+  background: #fff;
+  cursor: pointer;
 }
 
 .people-manager {
@@ -726,6 +759,14 @@ summary:focus-visible {
 
   .people-entry {
     grid-template-columns: 1fr;
+  }
+
+  .palette-controls {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .palette-select {
+    grid-column: 1 / -1;
   }
 
   .people-entry .btn {

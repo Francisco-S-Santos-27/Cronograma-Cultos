@@ -1,4 +1,4 @@
-const CACHE_NAME = 'cronograma-cultos-v1';
+const CACHE_NAME = 'cronograma-cultos-v2';
 const APP_SHELL = [
   './',
   './index.html',

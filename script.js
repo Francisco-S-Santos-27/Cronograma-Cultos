@@ -45,6 +45,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const oportunidadesContainer = document.getElementById('oportunidadesContainer');
   const btnAddOportunidade = document.getElementById('btnAddOportunidade');
   const preview = document.getElementById('preview');
+  const palettePreset = document.getElementById('palettePreset');
+  const previewColorInputs = [
+    document.getElementById('previewColorOne'),
+    document.getElementById('previewColorTwo'),
+    document.getElementById('previewColorThree'),
+    document.getElementById('previewTextColor')
+  ];
   const btnCopiar = document.getElementById('btnCopiar');
   const btnBaixarImagem = document.getElementById('btnBaixarImagem');
   const btnLimpar = document.getElementById('btnLimpar');
@@ -63,6 +70,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnCompartilhar = document.getElementById('btnCompartilhar');
   const toast = document.getElementById('toast');
   const installButtons = document.querySelectorAll('.btn-install');
+  const PALETTE_STORAGE_KEY = 'cronogramaCultoPalette';
+
+  const paletas = {
+    celebracao: ['#173f38', '#d7654a', '#278779', '#ffffff'],
+    oceano: ['#064e68', '#00a6a6', '#f2b84b', '#ffffff'],
+    alegria: ['#6a1b4d', '#ed6a5a', '#f2c14e', '#ffffff'],
+    amanhecer: ['#702c55', '#d95763', '#f1a34a', '#ffffff']
+  };
 
   const modelos = {
     celebracao: {
@@ -102,6 +117,45 @@ document.addEventListener('DOMContentLoaded', () => {
     clearTimeout(temporizadorToast);
     temporizadorToast = setTimeout(() => toast.classList.remove('is-visible'), 2800);
   }
+
+  function aplicarCoresPreview(cores) {
+    const variaveis = ['--preview-color-one', '--preview-color-two', '--preview-color-three', '--preview-text-color'];
+    cores.forEach((cor, indice) => {
+      preview.style.setProperty(variaveis[indice], cor);
+      previewColorInputs[indice].value = cor;
+    });
+    try {
+      localStorage.setItem(PALETTE_STORAGE_KEY, JSON.stringify(cores));
+    } catch {
+      mostrarAviso('As cores foram aplicadas, mas não salvas neste navegador.', 'error');
+    }
+  }
+
+  function restaurarCoresPreview() {
+    try {
+      const salvas = JSON.parse(localStorage.getItem(PALETTE_STORAGE_KEY) || 'null');
+      if (Array.isArray(salvas) && salvas.length === previewColorInputs.length && salvas.every((cor) => /^#[0-9a-f]{6}$/i.test(cor))) {
+        aplicarCoresPreview(salvas);
+        palettePreset.value = 'personalizada';
+        return;
+      }
+    } catch {
+      // Usa a paleta padrão se o armazenamento estiver indisponível.
+    }
+    aplicarCoresPreview(paletas.celebracao);
+  }
+
+  palettePreset.addEventListener('change', () => {
+    const cores = paletas[palettePreset.value];
+    if (cores) aplicarCoresPreview(cores);
+  });
+
+  previewColorInputs.forEach((input) => {
+    input.addEventListener('input', () => {
+      palettePreset.value = 'personalizada';
+      aplicarCoresPreview(previewColorInputs.map((colorInput) => colorInput.value));
+    });
+  });
 
   let deferredInstallPrompt = null;
 
@@ -563,6 +617,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   restaurarRascunho();
+  restaurarCoresPreview();
   renderizarPessoas();
   atualizarDiaSemana();
   atualizarPreview();
