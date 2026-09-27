@@ -167,6 +167,26 @@ body {
   gap: 6px;
 }
 
+.btn-install {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 5px;
+  color: #fff;
+  background: var(--primary-color);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.login-card .btn-install {
+  width: 100%;
+  margin-bottom: 18px;
+  padding: 11px;
+}
+
 .container {
   max-width: 950px;
   margin: 0 auto;
@@ -674,6 +694,7 @@ summary:focus-visible {
 
   .header-bar {
     align-items: flex-start;
+    flex-wrap: wrap;
   }
 
   .header-bar h1 {
@@ -682,6 +703,16 @@ summary:focus-visible {
 
   .header-bar h1 i {
     flex: 0 0 auto;
+  }
+
+  .header-bar h1 {
+    flex: 1 1 100%;
+  }
+
+  .header-bar .btn-install,
+  .btn-logout {
+    flex: 1 1 auto;
+    justify-content: center;
   }
 
   .btn-logout {

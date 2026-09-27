@@ -62,6 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const teamOptions = document.getElementById('teamOptions');
   const btnCompartilhar = document.getElementById('btnCompartilhar');
   const toast = document.getElementById('toast');
+  const installButtons = document.querySelectorAll('.btn-install');
 
   const modelos = {
     celebracao: {
@@ -100,6 +101,39 @@ document.addEventListener('DOMContentLoaded', () => {
     toast.classList.add('is-visible');
     clearTimeout(temporizadorToast);
     temporizadorToast = setTimeout(() => toast.classList.remove('is-visible'), 2800);
+  }
+
+  let deferredInstallPrompt = null;
+
+  window.addEventListener('beforeinstallprompt', (event) => {
+    event.preventDefault();
+    deferredInstallPrompt = event;
+  });
+
+  async function instalarAplicativo() {
+    if (deferredInstallPrompt) {
+      deferredInstallPrompt.prompt();
+      const escolha = await deferredInstallPrompt.userChoice;
+      deferredInstallPrompt = null;
+      if (escolha.outcome === 'accepted') mostrarAviso('Aplicativo instalado.');
+      return;
+    }
+
+    if (window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true) {
+      mostrarAviso('O aplicativo já está instalado.');
+    } else if (/iphone|ipad|ipod/i.test(navigator.userAgent)) {
+      mostrarAviso('No Safari, toque em Compartilhar e depois em Adicionar à Tela de Início.');
+    } else if (!window.isSecureContext) {
+      mostrarAviso('A instalação exige que o site seja aberto por HTTPS ou localhost.', 'error');
+    } else {
+      mostrarAviso('Abra o menu do navegador e escolha Instalar aplicativo ou Adicionar à tela inicial.');
+    }
+  }
+
+  installButtons.forEach((button) => button.addEventListener('click', instalarAplicativo));
+
+  if ('serviceWorker' in navigator && window.isSecureContext) {
+    navigator.serviceWorker.register('./service-worker.js').catch(() => {});
   }
 
   function carregarPessoas() {

@@ -1,0 +1,19 @@
+{
+  "id": "./",
+  "name": "Cronograma do Culto",
+  "short_name": "Cronograma",
+  "description": "Escala e cronograma de culto",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#edf4f1",
+  "theme_color": "#173f38",
+  "icons": [
+    {
+      "src": "app-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

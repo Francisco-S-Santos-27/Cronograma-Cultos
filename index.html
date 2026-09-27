@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sistema de Cronograma do Culto</title>
+  <meta name="theme-color" content="#173f38">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="app-icon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
@@ -25,6 +28,10 @@
         • E-mail: <code>ministerioyeshua@gmail.com</code><br>
         • Senha: <code>admin</code>
       </div>
+
+      <button type="button" class="btn-install">
+        <i class="fa-solid fa-download" aria-hidden="true"></i> Instalar aplicativo
+      </button>
 
       <form id="authForm">
         <div class="input-group">
@@ -60,6 +67,9 @@
     
     <div class="header-bar">
       <h1><i class="fa-solid fa-scroll"></i> ESCALA E CRONOGRAMA DE CULTO</h1>
+      <button type="button" class="btn-install">
+        <i class="fa-solid fa-download" aria-hidden="true"></i> Instalar
+      </button>
       <button class="btn-logout" id="btnLogout">
         <i class="fa-solid fa-right-from-bracket"></i> Sair
       </button>
@@ -204,8 +214,8 @@
         </button>
       </div>
     </div>
-    <div id="toast" class="toast" role="status" aria-live="polite"></div>
   </div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
   <script src="script.js"></script>
 </body>
