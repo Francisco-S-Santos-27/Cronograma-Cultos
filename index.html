@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Cronograma do Culto</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+
+  <!-- ==========================================
+       TELA DE LOGIN
+       ========================================== -->
+  <div id="loginSection" class="login-wrapper">
+    <div class="login-card">
+      <h2 id="loginTitle"><i class="fa-solid fa-lock"></i> Acesso ao Sistema</h2>
+      
+      <div class="credentials-info">
+        <i class="fa-solid fa-key"></i> <strong>Credenciais de Acesso:</strong><br>
+        • E-mail: <code>ministerioyeshua@gmail.com</code><br>
+        • Senha: <code>admin</code>
+      </div>
+
+      <form id="authForm">
+        <div class="input-group">
+          <label for="userEmail">E-mail</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-envelope input-icon"></i>
+            <input type="email" id="userEmail" value="ministerioyeshua@gmail.com" placeholder="ministerioyeshua@gmail.com" required>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label for="userPassword">Senha</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-key input-icon"></i>
+            <input type="password" id="userPassword" value="admin" placeholder="Sua senha" required>
+            <i class="fa-solid fa-eye toggle-password" id="togglePassword"></i>
+          </div>
+        </div>
+
+        <button type="submit" class="login-btn" id="btnAuthSubmit">
+          <i class="fa-solid fa-right-to-bracket"></i> Entrar
+        </button>
+        <p id="errorMsg" class="error-msg"></p>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       SISTEMA PRINCIPAL (CRONOGRAMA)
+       ========================================== -->
+  <div id="appSection">
+    
+    <div class="header-bar">
+      <h1><i class="fa-solid fa-scroll"></i> ESCALA E CRONOGRAMA DE CULTO</h1>
+      <button class="btn-logout" id="btnLogout">
+        <i class="fa-solid fa-right-from-bracket"></i> Sair
+      </button>
+    </div>
+
+    <div class="container">
+      <!-- Formulário de Preenchimento -->
+      <div class="card">
+        <h2><i class="fa-solid fa-calendar-days"></i> Programação Semanal</h2>
+        <details class="people-manager">
+          <summary>
+            <span><i class="fa-solid fa-people-group"></i> Pessoas e equipes</span>
+            <span id="peopleCount" class="people-count">0</span>
+          </summary>
+          <div class="people-content">
+            <div class="people-entry">
+              <div class="form-group">
+                <label for="personName">Nome</label>
+                <input type="text" id="personName" placeholder="Ex.: Ana Lima" autocomplete="off">
+              </div>
+              <div class="form-group">
+                <label for="personTeam">Equipe</label>
+                <input type="text" id="personTeam" list="teamOptions" placeholder="Ex.: Louvor" autocomplete="off">
+              </div>
+              <button type="button" class="btn" id="btnAddPerson">
+                <i class="fa-solid fa-user-plus"></i> Cadastrar
+              </button>
+            </div>
+            <datalist id="teamOptions">
+              <option value="Louvor"></option>
+              <option value="Recepção"></option>
+              <option value="Oração"></option>
+              <option value="Ensino"></option>
+              <option value="Jovens"></option>
+              <option value="Mídia"></option>
+              <option value="Outro"></option>
+            </datalist>
+            <datalist id="peopleOptions"></datalist>
+            <ul id="peopleList" class="people-list" aria-label="Pessoas cadastradas"></ul>
+          </div>
+        </details>
+        <form id="cronogramaForm">
+          <p id="saveStatus" class="save-status" role="status" aria-live="polite"></p>
+
+          <div class="form-group">
+            <label for="dataCulto">Data do Culto:</label>
+            <input type="date" id="dataCulto" required>
+            <small id="diaSemana" class="field-hint"></small>
+          </div>
+
+          <div class="form-group">
+            <label for="modeloCulto">Modelo pronto:</label>
+            <div class="template-controls">
+              <select id="modeloCulto">
+                <option value="">Escolha um modelo</option>
+                <option value="celebracao">Culto de Celebração</option>
+                <option value="familia">Culto da Família</option>
+                <option value="jovens">Culto de Jovens</option>
+                <option value="ensino">Culto de Ensino</option>
+                <option value="oracao">Culto de Oração</option>
+                <option value="ceia">Culto de Santa Ceia</option>
+              </select>
+              <button type="button" class="btn" id="btnAplicarModelo">Aplicar</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="tipoCulto">Tipo/Tema do Culto:</label>
+            <input type="text" id="tipoCulto" placeholder="Ex: Culto da Família, Ensino, Jovens...">
+          </div>
+
+          <div class="form-group">
+            <label for="portaria">Portaria / Recepção:</label>
+            <input type="text" id="portaria" list="peopleOptions" placeholder="Nome(s) dos responsáveis">
+          </div>
+
+          <h2><i class="fa-solid fa-list-ol"></i> Ordem do Culto</h2>
+
+          <div class="form-group">
+            <label for="oracaoInicial">Oração Inicial:</label>
+            <input type="text" id="oracaoInicial" list="peopleOptions" placeholder="Nome do responsável">
+          </div>
+
+          <div class="form-group">
+            <label for="louvor">Louvor / Ministério:</label>
+            <input type="text" id="louvor" list="peopleOptions" placeholder="Equipe ou cantor(a)">
+          </div>
+
+          <div class="form-group">
+            <label for="palavraIntroducao">Palavra de Introdução:</label>
+            <input type="text" id="palavraIntroducao" list="peopleOptions" placeholder="Nome do responsável">
+          </div>
+
+          <!-- Oportunidades Dinâmicas -->
+          <div class="oportunidades-header">
+            <label>Oportunidades:</label>
+            <button type="button" class="btn" id="btnAddOportunidade">
+              <i class="fa-solid fa-plus"></i> Adicionar
+            </button>
+          </div>
+          <div id="oportunidadesContainer"></div>
+
+          <div class="form-group">
+            <label for="palavraGenerosidade">Palavra da Generosidade (Dízimos/Ofertas):</label>
+            <input type="text" id="palavraGenerosidade" list="peopleOptions" placeholder="Nome do responsável">
+          </div>
+
+          <div class="form-group">
+            <label for="oracaoPreletor">Oração pelo Preletor(a):</label>
+            <input type="text" id="oracaoPreletor" list="peopleOptions" placeholder="Nome do responsável">
+          </div>
+
+          <div class="form-group">
+            <label for="palavraOficial">Palavra Oficial (Preletor):</label>
+            <input type="text" id="palavraOficial" list="peopleOptions" placeholder="Nome do pregador(a)">
+          </div>
+
+          <div class="form-group">
+            <label for="encerramento">Encerramento e Bênção Apostólica:</label>
+            <input type="text" id="encerramento" list="peopleOptions" placeholder="Nome do responsável">
+          </div>
+
+        </form>
+      </div>
+
+      <!-- Visualização / Resultado -->
+      <div class="card">
+        <h2><i class="fa-solid fa-eye"></i> Pré-visualização do Cartão</h2>
+        <div id="preview" class="preview-box"></div>
+        
+        <button class="btn btn-copy" id="btnCopiar">
+          <i class="fa-regular fa-copy"></i> Copiar Texto
+        </button>
+        <button class="btn btn-share" id="btnCompartilhar">
+          <i class="fa-solid fa-share-nodes"></i> Compartilhar
+        </button>
+        <button class="btn btn-download" id="btnBaixarImagem">
+          <i class="fa-regular fa-image"></i> Baixar como Imagem (PNG)
+        </button>
+        <button class="btn btn-clear" id="btnLimpar">
+          <i class="fa-solid fa-trash-can"></i> Limpar Formulário
+        </button>
+      </div>
+    </div>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
