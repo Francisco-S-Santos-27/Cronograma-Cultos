@@ -108,6 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let pessoas = carregarPessoas();
   let pessoaSelecionada = '';
+  let textoPreview = '';
   let temporizadorToast;
 
   function mostrarAviso(mensagem, tom = 'success') {
@@ -226,9 +227,10 @@ document.addEventListener('DOMContentLoaded', () => {
       teamOptions.appendChild(option);
     });
 
-    [...pessoas]
-      .sort((a, b) => a.equipe.localeCompare(b.equipe, 'pt-BR') || a.nome.localeCompare(b.nome, 'pt-BR'))
-      .forEach((pessoa) => {
+    const pessoasOrdenadas = [...pessoas]
+      .sort((a, b) => a.equipe.localeCompare(b.equipe, 'pt-BR') || a.nome.localeCompare(b.nome, 'pt-BR'));
+
+    pessoasOrdenadas.forEach((pessoa) => {
         const sugestao = document.createElement('option');
         sugestao.value = pessoa.nome;
         sugestao.label = pessoa.equipe;
@@ -287,6 +289,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!campo || !nome) return;
     campo.value = nome;
     campo.dispatchEvent(new Event('input', { bubbles: true }));
+    campo.dispatchEvent(new Event('change', { bubbles: true }));
     campo.classList.add('drop-assigned');
     setTimeout(() => campo.classList.remove('drop-assigned'), 650);
     pessoaSelecionada = '';
@@ -345,7 +348,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function coletarRascunho() {
     const campos = {};
-    form.querySelectorAll('input[id], select[id]').forEach((campo) => {
+    form.querySelectorAll('input[id]:not([type="file"]), select[id]').forEach((campo) => {
       campos[campo.id] = campo.value;
     });
     const oportunidades = Array.from(
@@ -413,6 +416,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function atualizarPreview() {
     const tipoCulto = document.getElementById('tipoCulto').value;
     const portaria = document.getElementById('portaria').value;
+    const portaria2 = document.getElementById('portaria2').value;
     const oracaoInicial = document.getElementById('oracaoInicial').value;
     const louvor = document.getElementById('louvor').value;
     const palavraIntroducao = document.getElementById('palavraIntroducao').value;
@@ -433,10 +437,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const dataFormatada = dataCulto.value
       ? new Date(`${dataCulto.value}T00:00:00`).toLocaleDateString('pt-BR')
       : 'Data não informada';
+    const responsaveisPortaria = [portaria, portaria2].filter(Boolean);
 
     let texto = `📅 *PROGRAMAÇÃO DO CULTO*\n`;
     texto += `📌 *Data:* ${dataFormatada}${diaNome ? ` (${diaNome})` : ''}${tipoCulto ? ` - ${tipoCulto}` : ''}\n`;
-    if (portaria) texto += `🚪 *Portaria/Recepção:* ${portaria}\n`;
+    if (responsaveisPortaria.length) texto += `🚪 *Portaria/Recepção:* ${responsaveisPortaria.join(' e ')}\n`;
     texto += `-----------------------------------\n`;
     texto += `📋 *CRONOGRAMA DO CULTO*\n\n`;
     if (oracaoInicial) texto += `🙏 *Oração Inicial:* ${oracaoInicial}\n`;
@@ -450,7 +455,79 @@ document.addEventListener('DOMContentLoaded', () => {
     if (palavraOficial) texto += `🔥 *Palavra Oficial:* ${palavraOficial}\n`;
     if (encerramento) texto += `✨ *Encerramento:* ${encerramento}`;
 
-    preview.textContent = texto;
+    textoPreview = texto;
+    renderizarPreview(texto);
+  }
+
+  function renderizarPreview(texto) {
+    preview.replaceChildren();
+    let oportunidadesAtivas = false;
+
+    texto.split('\n').forEach((linha) => {
+      const conteudo = linha.trim().replace(/\*/g, '');
+      if (!conteudo) return;
+
+      if (conteudo.includes('PROGRAMAÇÃO DO CULTO')) {
+        const titulo = document.createElement('h3');
+        titulo.className = 'preview-heading';
+        titulo.textContent = 'Programação do culto';
+        preview.appendChild(titulo);
+        return;
+      }
+
+      if (/^-{5,}$/.test(conteudo)) {
+        const divisor = document.createElement('div');
+        divisor.className = 'preview-rule';
+        preview.appendChild(divisor);
+        return;
+      }
+
+      if (conteudo.includes('CRONOGRAMA DO CULTO') || conteudo.includes('OPORTUNIDADES:')) {
+        oportunidadesAtivas = conteudo.includes('OPORTUNIDADES:');
+        const tituloSecao = document.createElement('h4');
+        tituloSecao.className = 'preview-section-heading';
+        tituloSecao.textContent = oportunidadesAtivas ? 'Oportunidades' : 'Cronograma do culto';
+        preview.appendChild(tituloSecao);
+        return;
+      }
+
+      const oportunidade = conteudo.match(/^(\d+)\.\s*(.*)$/);
+      if (oportunidadesAtivas && oportunidade) {
+        const item = document.createElement('div');
+        item.className = 'preview-opportunity';
+        const numero = document.createElement('span');
+        numero.className = 'preview-opportunity-number';
+        numero.textContent = oportunidade[1].padStart(2, '0');
+        const descricao = document.createElement('span');
+        descricao.textContent = oportunidade[2];
+        item.append(numero, descricao);
+        preview.appendChild(item);
+        return;
+      }
+
+      const entrada = conteudo.match(/^(\S+)\s+([^:]+):\s*(.*)$/);
+      if (entrada) {
+        const item = document.createElement('div');
+        item.className = conteudo.startsWith('📌') ? 'preview-entry preview-date' : 'preview-entry';
+        const icone = document.createElement('span');
+        icone.className = 'preview-entry-icon';
+        icone.textContent = entrada[1];
+        const rotulo = document.createElement('span');
+        rotulo.className = 'preview-entry-label';
+        rotulo.textContent = entrada[2].replace(/:$/, '');
+        const valor = document.createElement('span');
+        valor.className = 'preview-entry-value';
+        valor.textContent = entrada[3];
+        item.append(icone, rotulo, valor);
+        preview.appendChild(item);
+        return;
+      }
+
+      const item = document.createElement('div');
+      item.className = oportunidadesAtivas ? 'preview-opportunity-empty' : 'preview-entry-plain';
+      item.textContent = conteudo;
+      preview.appendChild(item);
+    });
   }
 
   function adicionarCampoOportunidade(valor = '') {
@@ -459,7 +536,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const input = document.createElement('input');
     input.type = 'text';
-    input.className = 'oportunidade-input';
+    input.className = 'oportunidade-input assignment-target';
     input.placeholder = 'Nome / Grupo / Louvor';
     input.setAttribute('list', 'peopleOptions');
     input.value = valor;
@@ -479,24 +556,33 @@ document.addEventListener('DOMContentLoaded', () => {
     atualizarPreview();
   }
 
-  btnBaixarImagem.addEventListener('click', () => {
+  btnBaixarImagem.addEventListener('click', async () => {
     const nomeArquivo = dataCulto.value || 'culto';
     if (typeof html2canvas !== 'function') {
       mostrarAviso('Biblioteca de imagem indisponível. Verifique sua conexão.', 'error');
       return;
     }
 
-    html2canvas(preview, { scale: 2, useCORS: true })
-      .then((canvas) => {
-        const link = document.createElement('a');
-        link.download = `cronograma_${nomeArquivo}.png`;
-        link.href = canvas.toDataURL('image/png');
-        link.click();
-        mostrarAviso('Imagem do cronograma baixada.');
-      })
-      .catch(() => {
-        mostrarAviso('Não foi possível gerar a imagem. Verifique sua conexão.', 'error');
-      });
+    try {
+      const imagens = Array.from(preview.querySelectorAll('img'));
+      await Promise.all(imagens.map((imagem) => {
+        if (typeof imagem.decode === 'function') return imagem.decode();
+        if (imagem.complete && imagem.naturalWidth > 0) return Promise.resolve();
+        return new Promise((resolve, reject) => {
+          imagem.addEventListener('load', resolve, { once: true });
+          imagem.addEventListener('error', reject, { once: true });
+        });
+      }));
+
+      const canvas = await html2canvas(preview, { scale: 2, useCORS: true });
+      const link = document.createElement('a');
+      link.download = `cronograma_${nomeArquivo}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      mostrarAviso('Imagem do cronograma baixada.');
+    } catch {
+      mostrarAviso('Não foi possível gerar a imagem. Verifique se a foto foi carregada.', 'error');
+    }
   });
 
   let temporizadorSalvamento;
@@ -511,18 +597,18 @@ document.addEventListener('DOMContentLoaded', () => {
   form.addEventListener('input', agendarSalvamento);
   form.addEventListener('change', agendarSalvamento);
   form.addEventListener('dragover', (event) => {
-    const campo = event.target.closest('input[list="peopleOptions"]');
+    const campo = event.target.closest('.assignment-target');
     if (!campo) return;
     event.preventDefault();
     event.dataTransfer.dropEffect = 'copy';
     campo.classList.add('drop-ready');
   });
   form.addEventListener('dragleave', (event) => {
-    const campo = event.target.closest('input[list="peopleOptions"]');
+    const campo = event.target.closest('.assignment-target');
     if (campo) campo.classList.remove('drop-ready');
   });
   form.addEventListener('drop', (event) => {
-    const campo = event.target.closest('input[list="peopleOptions"]');
+    const campo = event.target.closest('.assignment-target');
     if (!campo) return;
     event.preventDefault();
     campo.classList.remove('drop-ready');
@@ -530,7 +616,7 @@ document.addEventListener('DOMContentLoaded', () => {
     atribuirPessoa(campo, nome);
   });
   form.addEventListener('click', (event) => {
-    const campo = event.target.closest('input[list="peopleOptions"]');
+    const campo = event.target.closest('.assignment-target');
     if (campo && pessoaSelecionada) atribuirPessoa(campo, pessoaSelecionada);
   });
   peopleList.addEventListener('click', (event) => {
@@ -555,10 +641,10 @@ document.addEventListener('DOMContentLoaded', () => {
   btnCopiar.addEventListener('click', async () => {
     try {
       if (navigator.clipboard && window.isSecureContext) {
-        await navigator.clipboard.writeText(preview.textContent);
+        await navigator.clipboard.writeText(textoPreview);
       } else {
         const campoTemporario = document.createElement('textarea');
-        campoTemporario.value = preview.textContent;
+        campoTemporario.value = textoPreview;
         campoTemporario.setAttribute('readonly', '');
         campoTemporario.style.position = 'fixed';
         campoTemporario.style.opacity = '0';
@@ -577,7 +663,7 @@ document.addEventListener('DOMContentLoaded', () => {
   btnCompartilhar.addEventListener('click', async () => {
     if (navigator.share) {
       try {
-        await navigator.share({ title: 'Cronograma do culto', text: preview.textContent });
+        await navigator.share({ title: 'Cronograma do culto', text: textoPreview });
         mostrarAviso('Cronograma compartilhado.');
         return;
       } catch (erro) {
@@ -585,7 +671,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    const urlWhatsApp = `https://wa.me/?text=${encodeURIComponent(preview.textContent)}`;
+    const urlWhatsApp = `https://wa.me/?text=${encodeURIComponent(textoPreview)}`;
     window.open(urlWhatsApp, '_blank', 'noopener,noreferrer');
     mostrarAviso('Abrindo o compartilhamento pelo WhatsApp.');
   });
@@ -616,9 +702,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  renderizarPessoas();
   restaurarRascunho();
   restaurarCoresPreview();
-  renderizarPessoas();
   atualizarDiaSemana();
   atualizarPreview();
   adicionarCampoOportunidade();

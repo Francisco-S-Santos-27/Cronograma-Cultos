@@ -6,11 +6,11 @@
   <title>Sistema de Cronograma do Culto</title>
   <meta name="theme-color" content="#173f38">
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="icon" href="app-icon.svg" type="image/svg+xml">
+  <link rel="icon" href="assets/app-icon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="css/styles.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
@@ -142,25 +142,27 @@
           </div>
 
           <div class="form-group">
-            <label for="portaria">Portaria / Recepção:</label>
-            <input type="text" id="portaria" list="peopleOptions" placeholder="Nome(s) dos responsáveis">
+            <label for="portaria">Portaria / Recepção (responsável 1):</label>
+            <input type="text" id="portaria" class="assignment-target" list="peopleOptions" placeholder="Selecione ou arraste uma pessoa cadastrada">
+            <label class="portaria-second-label" for="portaria2">Segundo responsável:</label>
+            <input type="text" id="portaria2" class="assignment-target" list="peopleOptions" placeholder="Selecione ou arraste uma pessoa cadastrada">
           </div>
 
           <h2><i class="fa-solid fa-list-ol"></i> Ordem do Culto</h2>
 
           <div class="form-group">
             <label for="oracaoInicial">Oração Inicial:</label>
-            <input type="text" id="oracaoInicial" list="peopleOptions" placeholder="Nome do responsável">
+            <input type="text" id="oracaoInicial" class="assignment-target" list="peopleOptions" placeholder="Nome do responsável">
           </div>
 
           <div class="form-group">
             <label for="louvor">Louvor / Ministério:</label>
-            <input type="text" id="louvor" list="peopleOptions" placeholder="Equipe ou cantor(a)">
+            <input type="text" id="louvor" class="assignment-target" list="peopleOptions" placeholder="Equipe ou cantor(a)">
           </div>
 
           <div class="form-group">
             <label for="palavraIntroducao">Palavra de Introdução:</label>
-            <input type="text" id="palavraIntroducao" list="peopleOptions" placeholder="Nome do responsável">
+            <input type="text" id="palavraIntroducao" class="assignment-target" list="peopleOptions" placeholder="Nome do responsável">
           </div>
 
           <!-- Oportunidades Dinâmicas -->
@@ -174,22 +176,22 @@
 
           <div class="form-group">
             <label for="palavraGenerosidade">Palavra da Generosidade (Dízimos/Ofertas):</label>
-            <input type="text" id="palavraGenerosidade" list="peopleOptions" placeholder="Nome do responsável">
+            <input type="text" id="palavraGenerosidade" class="assignment-target" list="peopleOptions" placeholder="Nome do responsável">
           </div>
 
           <div class="form-group">
             <label for="oracaoPreletor">Oração pelo Preletor(a):</label>
-            <input type="text" id="oracaoPreletor" list="peopleOptions" placeholder="Nome do responsável">
+            <input type="text" id="oracaoPreletor" class="assignment-target" list="peopleOptions" placeholder="Nome do responsável">
           </div>
 
           <div class="form-group">
             <label for="palavraOficial">Palavra Oficial (Preletor):</label>
-            <input type="text" id="palavraOficial" list="peopleOptions" placeholder="Nome do pregador(a)">
+            <input type="text" id="palavraOficial" class="assignment-target" list="peopleOptions" placeholder="Nome do pregador(a)">
           </div>
 
           <div class="form-group">
             <label for="encerramento">Encerramento e Bênção Apostólica:</label>
-            <input type="text" id="encerramento" list="peopleOptions" placeholder="Nome do responsável">
+            <input type="text" id="encerramento" class="assignment-target" list="peopleOptions" placeholder="Nome do responsável">
           </div>
 
         </form>
@@ -233,6 +235,6 @@
   </div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-  <script src="script.js"></script>
+  <script src="js/script.js"></script>
 </body>
 </html>

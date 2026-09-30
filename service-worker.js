@@ -1,11 +1,11 @@
-const CACHE_NAME = 'cronograma-cultos-v2';
+const CACHE_NAME = 'cronograma-cultos-v12';
 const APP_SHELL = [
   './',
   './index.html',
-  './styles.css',
-  './script.js',
+  './css/styles.css',
+  './js/script.js',
   './manifest.webmanifest',
-  './app-icon.svg'
+  './assets/app-icon.svg'
 ];
 
 self.addEventListener('install', (event) => {
